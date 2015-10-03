@@ -1,0 +1,9 @@
+*.elf
+*.o
+*.scn
+*.toc
+*.expand
+*.log
+*.scn
+*.dot
+*.tex
