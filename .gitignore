@@ -7,3 +7,6 @@
 *.scn
 *.dot
 *.tex
+*.idx
+*.png
+*.c

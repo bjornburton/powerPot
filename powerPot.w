@@ -81,7 +81,7 @@ In idle, execution stops but timers continue and ADC conversion begins.
   the ADC.
 
   Next the pot position, determined by the ADC, is written to the timer of
-  the respective PWM output.  
+  the respective PWM output.
   @c
 
   if (pot == 0)
@@ -128,7 +128,7 @@ non-inverting PWM.
  TCCR0A &= ~(1<<COM0B0); // Set on Comparator B match (table 15-7)
 
  // 15.9.2 TCCR0B – Timer/Counter Control Register B
- TCCR0B |= (1<<CS02);   // Prescaler set to clk/8 (table 15-9)
+ TCCR0B |= (1<<CS01);   // Prescaler set to clk/8 (table 15-9)
 
  // 14.4.9 DDRD – The Port D Data Direction Register
   DDRB |= (1<<DDB0); // Data direction to output (sec 14.3.3)
