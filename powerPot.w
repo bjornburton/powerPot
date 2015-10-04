@@ -9,7 +9,23 @@
 @* Introduction.
 
 This converts the voltage from a potentiometer to a PWM output for heavier
-loads. Heavy loads just need a switching devide like a transistor.
+loads.
+The load then just need a switching device like a transistor.
+Since the switch does not operate in a partialy on state, it disipates very
+little power.
+
+@* Operation
+The potentiometer is connected across VCC, be it 3.3 or 5 Volts.
+The wiper of the pot can then have any voltage from 0 to VCC.
+The wiper is connected to the multiplexer. The MUX then selects this input and
+connects it to the ADC.
+The ADC is configured to use VCC as its reference voltage and to provide only
+8 bits (0 -- 255).
+For those reasons the ADC resolves 0 to VCC to an integer over the range of
+0 to 255.
+That integer is fed to the PWM timer.
+The loop alternates between channels.
+
 
 
 \vskip 4 pc
@@ -73,6 +89,7 @@ In idle, execution stops but timers continue and ADC conversion begins.
 
   @
   Now we wait in ``idle'' for an ADC conversion (7.1.1).
+  The counter timer, and so PWM, will continue during sleep.
   @c
     sleep_mode();
   @
@@ -80,7 +97,7 @@ In idle, execution stops but timers continue and ADC conversion begins.
   Usualy we would check for which interrupt but we will assume that it's
   the ADC.
 
-  Next the pot position, determined by the ADC, is written to the timer of
+  Next the pot position, as determined by the ADC, is written to the timer of
   the respective PWM output.
   @c
 
@@ -100,7 +117,7 @@ return 0;
 
 @ @<Initialize ADC@>=
 {@/
-  ADMUX  |= (1<<ADLAR); // Left adjust for 8 bits
+  ADMUX  |= (1<<ADLAR); // Left adjust for an 8 bit result
   ADCSRA |= (1<<ADPS2); // 500 kHz ADC clock
   ADCSRA |= (1<<ADIE);  // Interrupt on completion
   ADCSRA |= (1<<ADEN);  // Enable ADC (prescaler starts up)
@@ -110,8 +127,7 @@ return 0;
 }
 
 @
-PWM setup isn't too scary.
-Timer Count 0 is configured for ``Phase Correct'' PWM which, according to the
+Timer Counter 0 is configured for ``Phase Correct'' PWM which, according to the
 datasheet, is preferred for motor control.
 OC0A and OC0B are set to clear on a match which creates a
 non-inverting PWM.
@@ -123,9 +139,9 @@ non-inverting PWM.
  // 15.9.1 TCCR0A – Timer/Counter Control Register A
  TCCR0A |= (1<<WGM00);  // Phase correct, mode 1 of PWM (table 15-9)
  TCCR0A |= (1<<COM0A1); // Set/Clear on Comparator A match (table 15-4)
- TCCR0A &= ~(1<<COM0A0); // Set on Comparator A match (table 15-4)
+ TCCR0A &= ~(1<<COM0A0); //Clear  on Comparator A match (table 15-4)
  TCCR0A |= (1<<COM0B1); // Set/Clear on Comparator B match (table 15-7)
- TCCR0A &= ~(1<<COM0B0); // Set on Comparator B match (table 15-7)
+ TCCR0A &= ~(1<<COM0B0); // Clear on Comparator B match (table 15-7)
 
  // 15.9.2 TCCR0B – Timer/Counter Control Register B
  TCCR0B |= (1<<CS01);   // Prescaler set to clk/8 (table 15-9)
